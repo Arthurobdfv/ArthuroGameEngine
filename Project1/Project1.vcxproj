@@ -141,11 +141,14 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\Downloads\glad (1)\src\glad.c" />
+    <ClCompile Include="EBOMeshRenderer.cpp" />
     <ClCompile Include="Main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\Downloads\glad (1)\include\glad\glad.h" />
     <ClInclude Include="..\..\..\..\Downloads\glad (1)\include\KHR\khrplatform.h" />
+    <ClInclude Include="EBOMeshRenderer.h" />
+    <ClInclude Include="MeshRenderer.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="BaseFrag.glsl" />
