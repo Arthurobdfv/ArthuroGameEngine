@@ -30,3 +30,6 @@
 *.exe
 *.out
 *.app
+
+#build files (at least for a while to get it working)
+/build/*
