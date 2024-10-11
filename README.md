@@ -26,7 +26,7 @@ This list will be constantly changed as I plan and design the game engine.
 
 ### **Engine Features and Progress**
 - [ ] Refactor the setting up of VAO into different classes
-    - [ ] Create a EBOModelRenderer to render EBO-Descripted Models
+    - [x] Create a EBOModelRenderer to render EBO-Descripted Models
     - [ ] Create a VBOModelRenderer to render VBO-Descripted Models
 - [ ] Rendering
     - [ ] Refactor the Shader setting-up strategy to better create / use shader programs
