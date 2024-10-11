@@ -2,7 +2,13 @@
 #include <glad/glad.h>
 #include <glfw3.h>
 
-void EBOMeshRenderer::RenderMesh() {
+void EBOMeshRenderer::RenderMesh(bool* wireframeMode) {
+	if (wireframeMode != nullptr) {
+		if (*wireframeMode)
+			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+		else
+			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	}
 	glBindVertexArray(m_vaoId);
 	glDrawElements(GL_TRIANGLES, indexDataSize, GL_UNSIGNED_INT, 0);
 	glBindVertexArray(0);

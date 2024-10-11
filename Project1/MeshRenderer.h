@@ -7,7 +7,7 @@ namespace Mesh {
 		virtual unsigned int Size() { return size; }
 
 		virtual void SetupMesh() {};
-		virtual void RenderMesh() {};
+		virtual void RenderMesh(bool* wireframeMode = nullptr) {};
 
 		virtual void SetVerts(float* vertData, size_t numberOfVerts) {};
 

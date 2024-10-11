@@ -7,7 +7,7 @@ using namespace Mesh;
 class EBOMeshRenderer : public MeshRenderer
 {
 	public:
-		void RenderMesh() override;
+		void RenderMesh(bool* wireframeMode = nullptr) override;
 		void SetupMesh() override;
 		void SetVerts(float* vertData, size_t numberOfVerts) override;
 		void SetIndexes(float* indexData, size_t numberOfIndexes);
