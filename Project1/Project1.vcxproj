@@ -143,16 +143,21 @@
     <ClCompile Include="..\..\..\..\Downloads\glad (1)\src\glad.c" />
     <ClCompile Include="EBOMeshRenderer.cpp" />
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="Shader.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\Downloads\glad (1)\include\glad\glad.h" />
     <ClInclude Include="..\..\..\..\Downloads\glad (1)\include\KHR\khrplatform.h" />
     <ClInclude Include="EBOMeshRenderer.h" />
     <ClInclude Include="MeshRenderer.h" />
+    <ClInclude Include="Shader.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="BaseFrag.glsl" />
-    <None Include="BaseVertex.glsl" />
+    <None Include="ColorfulVertexShader.vs" />
+    <None Include="ColorfulVertexShaderOffsetPos.vs" />
+    <None Include="ColorfulVertexShaderUpsideDown.vs" />
+    <None Include="InputVertexColor.fs" />
+    <None Include="DarkRedVertexColor.vs" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

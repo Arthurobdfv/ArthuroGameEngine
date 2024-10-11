@@ -5,7 +5,7 @@
 #include <iostream>
 #include "EBOMeshRenderer.h"
 #include <thread>
-
+#include "Shader.h"
 
 using namespace std;
 
@@ -35,48 +35,12 @@ void renderTriangle(unsigned int* vbo);
 void inputLoop(AppConfig* appCfg, bool* threadFinished);
 #pragma endregion
 
-#pragma region Basic Shaders
-const char* vertexShaderSource = "#version 330 core\n"
-"layout (location = 0) in vec3 aPos;\n"
-"void main()\n"
-"{\n"
-" gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
-"}\0";
-
-const char* fragShaderSource = "#version 330 core\n"
-"out vec4 FragColor;\n"
-"void main()\n"
-"{\n"
-"	FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
-"}\0";
-#pragma endregion
-
-// Shaders from the Shader Chapter O of learn OpenGL 
-#pragma region VertexColorShaders
-const char* vertexColorShader = "#version 330 core\n"
-"layout (location = 0) in vec3 aPos;\n"
-"out vec4 vertexColor;\n"
-"void main()\n"
-"{\n"
-" vertexColor = vec4(0.5, 0.0, 0.0, 1.0);\n"
-" gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
-"}\0";
-
-
-const char* fragVertexColorShader = "#version 330 core\n"
-"out vec4 FragColor;\n"
-"in vec4 vertexColor;\n"
-"void main()\n"
-"{\n"
-"	FragColor = vertexColor;\n"
-"}\0";
-#pragma endregion
-
 #pragma region Vertex Hardcoded Data
 const float triangleVerts[] = {
-		-0.5f,-0.5f, 0.0f,
-		 0.5f,-0.5f, 0.0f,
-		 0.0f, 0.5f, 0.0f,
+	// positions	 // colors
+	 0.5f,-0.5f, 0.0f, 1.0f, 0.0f, 0.0f, // bottom right
+	 -0.5f,-0.5f, 0.0f, 0.0f, 1.0f, 0.0f, // bottom left
+	 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f // top
 };
 
 float rectangleVerts[] = {
@@ -95,7 +59,6 @@ unsigned int indexes[] = {
 
 int main() {
 	// Vert Data for initial triangle
-
 	AppConfig* configs = new AppConfig();
 	float* vertDataPtr = rectangleVerts;
 	MeshRenderer* mesh = new EBOMeshRenderer(vertDataPtr, sizeof(rectangleVerts) / sizeof(float), &indexes[0], sizeof(indexes) / sizeof(unsigned int));
@@ -124,77 +87,44 @@ int main() {
 	unsigned int vertexShaderId;
 	unsigned int fragShaderId;
 
-	unsigned int vertexColorVertexShaderId;
-	unsigned int vertexColorFragShaderid;
-	setupBaseVertexShader(&vertexColorVertexShaderId, (char*)vertexColorShader);
-	setupBaseFragShader(&vertexColorFragShaderid, (char*)fragVertexColorShader);
-
-	unsigned int vertexColorShaderProgram = glCreateProgram();
-	glAttachShader(vertexColorShaderProgram, vertexColorVertexShaderId);
-	glAttachShader(vertexColorShaderProgram, vertexColorFragShaderid);
-	glLinkProgram(vertexColorShaderProgram);
-	if (compileLinkProgram(vertexColorShaderProgram)) {
-		glDeleteShader(vertexColorVertexShaderId);
-		glDeleteShader(vertexColorFragShaderid);
-		mesh->SetupMesh();
-		glVertexAttribPointer(
-			0, // Matching layout index of the attribute we want to set 
-			3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-		glEnableVertexAttribArray(0);
-	}
-
-
+	Shader darkRedTriangleShader = Shader("DarkRedVertexColor.vs", "InputVertexColor.fs");
+	Shader colorfulVertexTriangleShader = Shader("ColorfulVertexShaderOffsetPos.vs", "InputVertexColor.fs");
 	unsigned int VBO =0;
 	unsigned int VAO = 0;
-	setupBaseVertexShader(&vertexShaderId, (char*)vertexShaderSource);
-	setupBaseFragShader(&fragShaderId, (char*)fragShaderSource);
 
-	
+	setupHelloTriangle(&VBO, &VAO);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+	glEnableVertexAttribArray(1);
+	glEnableVertexAttribArray(2);
 
-	unsigned int shaderProgram;
-	shaderProgram = glCreateProgram();
-	glAttachShader(shaderProgram, vertexShaderId);
-	glAttachShader(shaderProgram, fragShaderId);
-	glLinkProgram(shaderProgram);
-	if (compileLinkProgram(shaderProgram)) {
-		// For some reason we can delete the shaders after linking?...
-		// Need to understand better the glLinkProgram;
-		glDeleteShader(vertexShaderId);
-		glDeleteShader(fragShaderId);
-		// 0. copy our vertices array in a buffer for OpenGL to use
 
-		//setupHelloRectangleEBO(&VBO);
-
-		// Specified how the vertex shader should read the input data.... 
-		// We need to make sure the translation of the vertex data follows a convention in this "Engine"
-		// This will read the data from the last VBO bound to GL_ARRAY_BUFFER
-		//setupHelloTriangle(&VBO, &VAO);
-		//setupHelloRectangleEBO(&VBO, &VAO);
-
-		// Move this to a newly created shader class
-		glVertexAttribPointer(
-			0, // Matching layout index of the attribute we want to set 
-			3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-		glEnableVertexAttribArray(0);
-	}
+	float offsetX = 0, offsetY = 0;
 	bool threadClosed = false;
 	thread newThread(inputLoop, configs, &threadClosed);
 	while (!glfwWindowShouldClose(window) && !*configs->closeApp && !threadClosed) {
 		// processing inputs
 		processInput(window);
 
+		if (glfwGetKey(window, GLFW_KEY_W))
+			offsetY += 0.05;
+		else if (glfwGetKey(window, GLFW_KEY_S))
+			offsetY -= 0.05;
+
+		if (glfwGetKey(window, GLFW_KEY_A))
+			offsetX -= 0.05;
+		else if (glfwGetKey(window, GLFW_KEY_D))
+			offsetX += 0.05;
+
 		// rendernig commands
 		glClear(GL_COLOR_BUFFER_BIT);
-		glUseProgram(vertexColorShaderProgram);
-	
-		// We are using EBOs
-		// Triangles when using Vertex Array Object (VAO)
-		//glBindVertexArray(VAO);
-		//glDrawArrays(GL_TRIANGLES, 0, 3);
-		//renderTriangle(&VAO);
-		//renderRectangle(&VAO);
-		mesh->RenderMesh(configs->renderWireframe);
-		// check and call events and swap the buffers
+		colorfulVertexTriangleShader.Use();
+		colorfulVertexTriangleShader.SetVector("offsetPos", offsetX, offsetY);
+		renderTriangle(&VAO);
+
+		//mesh->RenderMesh(configs->renderWireframe);
+
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 	}

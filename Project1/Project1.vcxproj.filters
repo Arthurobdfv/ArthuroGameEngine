@@ -19,6 +19,9 @@
     <Filter Include="Arquivos de Origem\Graphics">
       <UniqueIdentifier>{2c6f7656-419e-4723-94ea-c3d734767d29}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Arquivos de Origem\Graphics\MeshRenderers">
+      <UniqueIdentifier>{b304dd6c-e1d4-4289-bfe0-4afdaeb05d9f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -28,7 +31,10 @@
       <Filter>Arquivos de Origem</Filter>
     </ClCompile>
     <ClCompile Include="EBOMeshRenderer.cpp">
-      <Filter>Arquivos de Origem</Filter>
+      <Filter>Arquivos de Origem\Graphics\MeshRenderers</Filter>
+    </ClCompile>
+    <ClCompile Include="Shader.cpp">
+      <Filter>Arquivos de Origem\Graphics</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -44,13 +50,21 @@
     <ClInclude Include="MeshRenderer.h">
       <Filter>Arquivos de Cabeçalho</Filter>
     </ClInclude>
+    <ClInclude Include="Shader.h">
+      <Filter>Arquivos de Cabeçalho</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="BaseVertex.glsl">
+    <None Include="DarkRedVertexColor.vs">
       <Filter>Arquivos de Origem\Shaders</Filter>
     </None>
-    <None Include="BaseFrag.glsl">
+    <None Include="InputVertexColor.fs">
       <Filter>Arquivos de Origem\Shaders</Filter>
     </None>
+    <None Include="ColorfulVertexShader.vs">
+      <Filter>Arquivos de Origem\Shaders</Filter>
+    </None>
+    <None Include="ColorfulVertexShaderUpsideDown.vs" />
+    <None Include="ColorfulVertexShaderOffsetPos.vs" />
   </ItemGroup>
 </Project>
