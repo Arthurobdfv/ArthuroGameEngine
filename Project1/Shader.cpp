@@ -3,6 +3,8 @@
 #include <sstream>
 #include <iostream>
 #include "glad/glad.h"
+#include "glm/gtc/type_ptr.hpp"
+using namespace glm;
 
 Shader::Shader(const char* vertexPath, const char* fragmentPath)
 {
@@ -103,4 +105,9 @@ void Shader::SetVector(const string& name, float x, float y, float z, float w)
 {
 	unsigned int uniLoc = glGetUniformLocation(programId, name.c_str());
 	glUniform4f(uniLoc, x, y, z, w);
+}
+
+void Shader::SetMat4(const string& name, mat4 matData)
+{
+	glUniformMatrix4fv(glGetUniformLocation(programId, name.c_str()), 1, GL_FALSE, glm::value_ptr(matData));
 }

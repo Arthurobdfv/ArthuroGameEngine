@@ -34,7 +34,7 @@ void processInput(GLFWwindow* window);
 void setupHelloTriangle(unsigned int* vbo, unsigned int* vao);
 void setupHelloRectangleEBO(unsigned int* ebo, unsigned int* vao);
 void renderRectangle(unsigned int* vbo);
-void renderTriangle(unsigned int* vbo);
+void renderTriangle(unsigned int* vbo, unsigned int vertexCount);
 void inputLoop(AppConfig* appCfg, bool* threadFinished);
 unsigned int LoadImages(string source, int type);
 #pragma endregion
@@ -65,15 +65,79 @@ float texCoords[] = {
 	1.0f, 0.0f,
 	0.5f, 1.0f
 };
+
+float cubeVertices[] = {
+	-0.5f,-0.5f,-0.5f,		0.0f, 0.0f,
+	 0.5f,-0.5f,-0.5f,		1.0f, 0.0f,
+	 0.5f, 0.5f,-0.5f,		1.0f, 1.0f,
+	 0.5f, 0.5f,-0.5f,		1.0f, 1.0f,
+	-0.5f, 0.5f,-0.5f,		0.0f,1.0f,
+	-0.5f,-0.5f,-0.5f,		0.0f,0.0f,
+	-0.5f,-0.5f, 0.5f,		0.0f,0.0f,
+	0.5f,-0.5f, 0.5f,		1.0f,0.0f,
+	0.5f, 0.5f, 0.5f,		1.0f,1.0f,
+	0.5f, 0.5f, 0.5f,		1.0f,1.0f,
+	-0.5f, 0.5f, 0.5f,		0.0f,1.0f,
+	-0.5f,-0.5f, 0.5f,		0.0f,0.0f
+	,-0.5f, 0.5f, 0.5f,		1.0f,0.0f,
+	-0.5f, 0.5f,-0.5f,		1.0f,1.0f,
+	-0.5f,-0.5f,-0.5f,		0.0f,1.0f,
+	-0.5f,-0.5f,-0.5f,		0.0f,1.0f,
+	-0.5f,-0.5f, 0.5f,		0.0f,0.0f,
+	-0.5f, 0.5f, 0.5f,		1.0f,0.0f,
+	 0.5f, 0.5f, 0.5f,		1.0f,0.0f,
+	 0.5f, 0.5f,-0.5f,		1.0f,1.0f,
+	 0.5f,-0.5f,-0.5f,		0.0f,1.0f,
+	 0.5f,-0.5f,-0.5f,		0.0f,1.0f,
+	 0.5f,-0.5f, 0.5f,		0.0f,0.0f,
+	 0.5f, 0.5f, 0.5f,		1.0f,0.0f,
+	-0.5f,-0.5f,-0.5f,		0.0f,1.0f,
+	 0.5f,-0.5f,-0.5f,		1.0f,1.0f,
+	 0.5f,-0.5f, 0.5f,		1.0f,0.0f,
+	 0.5f,-0.5f, 0.5f,		1.0f,0.0f,
+	-0.5f,-0.5f, 0.5f,		0.0f,0.0f,
+	-0.5f,-0.5f,-0.5f,		0.0f,1.0f,
+	-0.5f, 0.5f,-0.5f,		0.0f,1.0f,
+	 0.5f, 0.5f,-0.5f,		1.0f,1.0f,
+	 0.5f, 0.5f, 0.5f,		1.0f,0.0f,
+	 0.5f, 0.5f, 0.5f,		1.0f,0.0f,
+	-0.5f, 0.5f, 0.5f,		0.0f,0.0f,
+	-0.5f, 0.5f,-0.5f,		0.0f,1.0f
+};
+
+glm::vec3 cubePositions[] = {
+ glm::vec3(0.0f, 0.0f, 0.0f),
+ glm::vec3(2.0f, 5.0f,-15.0f),
+ glm::vec3(-1.5f,-2.2f,-2.5f),
+ glm::vec3(-3.8f,-2.0f,-12.3f),
+ glm::vec3(2.4f,-0.4f,-3.5f),
+ glm::vec3(-1.7f, 3.0f,-7.5f),
+ glm::vec3(1.3f,-2.0f,-2.5f),
+ glm::vec3(1.5f, 2.0f,-2.5f),
+ glm::vec3(1.5f, 0.2f,-1.5f),
+ glm::vec3(-1.3f, 1.0f,-1.5f)
+};
 #pragma endregion
 
 int main() {
-
+	float farPlane = 200.0f;
+	float nearPlane = 0.1f;
+	int width = 800, height = 600;
 	vec4 vec(1.0f, 0.0f, 0.0f, 1.0f);
 	mat4 trans = mat4(1.0f);
 	//trans = translate(trans, vec3(1.0f, 1.0f, 0.0f));
 	//trans = rotate(trans, radians(90.0f), vec3(0.0, 0.0, 1.0));
 	//trans = scale(trans, vec3(0.5, 0.5, 0.5));
+
+
+	mat4 model = mat4(1.0f);
+	model = rotate(model, radians(-55.0f), vec3(1.0f, 0.0f, 0.0f));
+	mat4 view = mat4(1.0f);
+	view = translate(view, vec3(0.0f, 0.0f, -3.0f));
+
+
+	mat4 orthoMat = ortho(0.0f, 800.0f, 0.0f, 600.0f, nearPlane, farPlane);
+	mat4 projeMat = perspective(radians(45.0f), (float)width / (float)height, nearPlane, farPlane);
 	vec = trans * vec;
 	cout << vec.x << " ," << vec.y << " ," << vec.z << endl;
 
@@ -88,7 +152,7 @@ int main() {
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-	GLFWwindow* window = glfwCreateWindow(800, 600, "Game Engine", NULL, NULL);
+	GLFWwindow* window = glfwCreateWindow(width, height, "Game Engine", NULL, NULL);
 	if (window == NULL) {
 		cout << "Failed to create GLFW window" << endl;
 		glfwTerminate();
@@ -102,6 +166,7 @@ int main() {
 	glViewport(0, 0, 800, 600);
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+	glEnable(GL_DEPTH_TEST);
 
 	// Vertex Buffer Object id
 	unsigned int vertexShaderId;
@@ -113,7 +178,8 @@ int main() {
 	unsigned int VBO = 0;
 	unsigned int VAO = 0;
 
-	setupHelloRectangleEBO(&VBO, &VAO);
+	//setupHelloRectangleEBO(&VBO, &VAO);
+	setupHelloTriangle(&VBO, &VAO);
 	unsigned int brickWallTexId = LoadImages("./Assets/Images/brick_wall.jpg", GL_RGB);
 	unsigned int emojiTexId = LoadImages("./Assets/Images/emoji.png", GL_RGBA);
 	glActiveTexture(GL_TEXTURE0);
@@ -121,33 +187,47 @@ int main() {
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, emojiTexId);
 
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+	// Cube Vertex Attribs
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
-	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(2*sizeof(float)));
 	glEnableVertexAttribArray(2);
 
+	//glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+	//glEnableVertexAttribArray(0);
+	//glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+	//glEnableVertexAttribArray(1);
+	//glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+	//glEnableVertexAttribArray(2);
+
 	unsigned int transformLoc = glGetUniformLocation(textureAndVertexColor.programId, "transform");
+	unsigned int modelLoc = glGetUniformLocation(textureAndVertexColor.programId, "model");
+	unsigned int viewLoc = glGetUniformLocation(textureAndVertexColor.programId, "view");
+	unsigned int projectionLoc = glGetUniformLocation(textureAndVertexColor.programId, "projection");
 	trans = glm::translate(trans, glm::vec3(0.5f, -0.5f, 0.0f));
 
 	float offsetX = 0, offsetY = 0, mixRate = 0, numberOfFaces = 1;
 	bool threadClosed = false;
 	thread newThread(inputLoop, configs, &threadClosed);
 	while (!glfwWindowShouldClose(window) && !*configs->closeApp) {
+		model = rotate(model, (float)glfwGetTime() * radians(1.0f), vec3(0.5f, 1.0f, 0.0f));
 		// processing inputs
 		processInput(window);
 
+		offsetX = 0;
+		offsetY = 0;
 		// Small WASD command to play around with the mesh, will not look like this in the end
 		if (glfwGetKey(window, GLFW_KEY_W))
-			offsetY += 0.05;
+			offsetY = 0.05;
 		else if (glfwGetKey(window, GLFW_KEY_S))
-			offsetY -= 0.05;
+			offsetY = - 0.05;
 
 		if (glfwGetKey(window, GLFW_KEY_A))
-			offsetX -= 0.05;
+			offsetX = -0.05;
 		else if (glfwGetKey(window, GLFW_KEY_D))
-			offsetX += 0.05;
+			offsetX = 0.05;
+		
+		view = translate(view, vec3(offsetX,0.0f, offsetY));
 
 		if (glfwGetKey(window, GLFW_KEY_UP))
 			mixRate += 0.05;
@@ -169,7 +249,7 @@ int main() {
 
 
 		// rendernig commands
-		glClear(GL_COLOR_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		textureAndVertexColor.Use();
 		textureAndVertexColor.SetInt("ourTexture", 0);
 		textureAndVertexColor.SetInt("ourSecondTexture", 1);
@@ -177,12 +257,27 @@ int main() {
 		textureAndVertexColor.SetFloat("numberOfFaces", numberOfFaces);
 		textureAndVertexColor.SetVector("offsetPos", offsetX, offsetY);
 		glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
-		trans = glm::rotate(trans, (float)glfwGetTime(),
-			glm::vec3(0.0f, 0.0f, 1.0f));
-		//glBindTexture(GL_TEXTURE_2D, texId);
-		renderRectangle(&VAO);
-		//renderTriangle(&VAO);
+		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+		glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
+		glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projeMat));
 
+
+
+		//glBindTexture(GL_TEXTURE_2D, texId);
+		//renderRectangle(&VAO);
+
+		glBindVertexArray(VAO);
+		for (unsigned int i = 0; i < 10; i++)
+		{
+			glm::mat4 model = glm::mat4(1.0f);
+			model = glm::translate(model, cubePositions[i]);
+			float angle = 20.0f * i;
+			model = glm::rotate(model, glm::radians(angle),
+				glm::vec3(1.0f, 0.3f, 0.5f));
+			renderTriangle(&VAO, 36);
+			textureAndVertexColor.SetMat4("model", model);
+			glDrawArrays(GL_TRIANGLES, 0, 36);
+		}
 		//mesh->RenderMesh(configs->renderWireframe);
 
 		glfwSwapBuffers(window);
@@ -229,9 +324,9 @@ void renderRectangle(unsigned int* vbo) {
 	glBindVertexArray(0);
 }
 
-void renderTriangle(unsigned int* vbo) {
+void renderTriangle(unsigned int* vbo, unsigned int vertexCount) {
 	glBindVertexArray(*vbo);
-	glDrawArrays(GL_TRIANGLES, 0, 3);
+	glDrawArrays(GL_TRIANGLES, 0, vertexCount);
 }
 
 void setupHelloTriangle(unsigned int* vbo, unsigned int* vao) {
@@ -239,7 +334,7 @@ void setupHelloTriangle(unsigned int* vbo, unsigned int* vao) {
 	glGenVertexArrays(1, vao);
 	glBindVertexArray(*vao);
 	glBindBuffer(GL_ARRAY_BUFFER, *vbo);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(triangleVerts), triangleVerts, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(cubeVertices), cubeVertices, GL_STATIC_DRAW);
 
 }
 
