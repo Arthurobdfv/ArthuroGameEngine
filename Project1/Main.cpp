@@ -6,8 +6,14 @@
 #include "EBOMeshRenderer.h"
 #include <thread>
 #include "Shader.h"
+#include "stb_image.h"
+#include "glm/glm.hpp"
+#include "glm/gtc/matrix_transform.hpp"
+#include "glm/gtc/type_ptr.hpp"
+
 
 using namespace std;
+using namespace glm;
 
 #pragma region AppConfig Struct
 struct AppConfig {
@@ -26,38 +32,52 @@ struct AppConfig {
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow* window);
 void setupHelloTriangle(unsigned int* vbo, unsigned int* vao);
-void setupBaseVertexShader(unsigned int* vertexShader, char* shaderContent);
-void setupBaseFragShader(unsigned int* fragShader, char* shaderContent);
-bool compileLinkProgram(unsigned int programId);
 void setupHelloRectangleEBO(unsigned int* ebo, unsigned int* vao);
 void renderRectangle(unsigned int* vbo);
 void renderTriangle(unsigned int* vbo);
 void inputLoop(AppConfig* appCfg, bool* threadFinished);
+unsigned int LoadImages(string source, int type);
 #pragma endregion
 
 #pragma region Vertex Hardcoded Data
 const float triangleVerts[] = {
-	// positions	 // colors
-	 0.5f,-0.5f, 0.0f, 1.0f, 0.0f, 0.0f, // bottom right
-	 -0.5f,-0.5f, 0.0f, 0.0f, 1.0f, 0.0f, // bottom left
+	// positions	 // colors			// Tex coords
+	 0.5f,-0.5f, 0.0f, 1.0f, 0.0f, 0.0f,		// bottom right
+	 -0.5f,-0.5f, 0.0f, 0.0f, 1.0f, 0.0f,		// bottom left
 	 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f // top
 };
 
 float rectangleVerts[] = {
-	0.5f, 0.5f, 0.0f, // top right
-	0.5f,-0.5f, 0.0f, // bottom right
-	-0.5f,-0.5f, 0.0f, // bottom left
-	-0.5f, 0.5f, 0.0f, // top left
-	0.0f, 0.75f, 0.0f
+	// Positions		// Colors			//Tex Coords
+	0.5f, 0.5f, 0.0f,	1.0f,0.0f,0.0f,		1.0f,1.0f,		// top right
+	0.5f,-0.5f, 0.0f,	0.0f,1.0f,0.0f,		1.0f,0.0f,		// bottom right
+	-0.5f,-0.5f, 0.0f,	0.0f,0.0f,1.0f,		0.0f,0.0f,		// bottom left
+	-0.5f, 0.5f, 0.0f,	1.0f,1.0f,0.0f,		0.0f,1.0f,		// top left
 };
 unsigned int indexes[] = {
 	0,1,3,
 	1,2,3,
 	3,4,0
 };
+
+float texCoords[] = {
+	0.0f, 0.0f,
+	1.0f, 0.0f,
+	0.5f, 1.0f
+};
 #pragma endregion
 
 int main() {
+
+	vec4 vec(1.0f, 0.0f, 0.0f, 1.0f);
+	mat4 trans = mat4(1.0f);
+	//trans = translate(trans, vec3(1.0f, 1.0f, 0.0f));
+	//trans = rotate(trans, radians(90.0f), vec3(0.0, 0.0, 1.0));
+	//trans = scale(trans, vec3(0.5, 0.5, 0.5));
+	vec = trans * vec;
+	cout << vec.x << " ," << vec.y << " ," << vec.z << endl;
+
+
 	// Vert Data for initial triangle
 	AppConfig* configs = new AppConfig();
 	float* vertDataPtr = rectangleVerts;
@@ -89,24 +109,36 @@ int main() {
 
 	Shader darkRedTriangleShader = Shader("DarkRedVertexColor.vs", "InputVertexColor.fs");
 	Shader colorfulVertexTriangleShader = Shader("ColorfulVertexShaderOffsetPos.vs", "InputVertexColor.fs");
-	unsigned int VBO =0;
+	Shader textureAndVertexColor = Shader("./Assets/Shaders/TexturedColorfulVertexShaderOffsetPos.vs", "./Assets/Shaders/TexturedInputVertexColor.fs");
+	unsigned int VBO = 0;
 	unsigned int VAO = 0;
 
-	setupHelloTriangle(&VBO, &VAO);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+	setupHelloRectangleEBO(&VBO, &VAO);
+	unsigned int brickWallTexId = LoadImages("./Assets/Images/brick_wall.jpg", GL_RGB);
+	unsigned int emojiTexId = LoadImages("./Assets/Images/emoji.png", GL_RGBA);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, brickWallTexId);
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, emojiTexId);
+
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
 	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
 	glEnableVertexAttribArray(2);
 
+	unsigned int transformLoc = glGetUniformLocation(textureAndVertexColor.programId, "transform");
+	trans = glm::translate(trans, glm::vec3(0.5f, -0.5f, 0.0f));
 
-	float offsetX = 0, offsetY = 0;
+	float offsetX = 0, offsetY = 0, mixRate = 0, numberOfFaces = 1;
 	bool threadClosed = false;
 	thread newThread(inputLoop, configs, &threadClosed);
-	while (!glfwWindowShouldClose(window) && !*configs->closeApp && !threadClosed) {
+	while (!glfwWindowShouldClose(window) && !*configs->closeApp) {
 		// processing inputs
 		processInput(window);
 
+		// Small WASD command to play around with the mesh, will not look like this in the end
 		if (glfwGetKey(window, GLFW_KEY_W))
 			offsetY += 0.05;
 		else if (glfwGetKey(window, GLFW_KEY_S))
@@ -117,19 +149,47 @@ int main() {
 		else if (glfwGetKey(window, GLFW_KEY_D))
 			offsetX += 0.05;
 
+		if (glfwGetKey(window, GLFW_KEY_UP))
+			mixRate += 0.05;
+		else if (glfwGetKey(window, GLFW_KEY_DOWN))
+			mixRate -= 0.05;
+
+		if (glfwGetKey(window, GLFW_KEY_RIGHT))
+			numberOfFaces += 0.05;
+		else if (glfwGetKey(window, GLFW_KEY_LEFT))
+			numberOfFaces -= 0.05;
+
+		if (mixRate > 1)
+			mixRate = 1;
+		if (mixRate < 0)
+			mixRate = 0;
+
+		if (numberOfFaces <= 0)
+			numberOfFaces = 0.05;
+
+
 		// rendernig commands
 		glClear(GL_COLOR_BUFFER_BIT);
-		colorfulVertexTriangleShader.Use();
-		colorfulVertexTriangleShader.SetVector("offsetPos", offsetX, offsetY);
-		renderTriangle(&VAO);
+		textureAndVertexColor.Use();
+		textureAndVertexColor.SetInt("ourTexture", 0);
+		textureAndVertexColor.SetInt("ourSecondTexture", 1);
+		textureAndVertexColor.SetFloat("mixRate", mixRate);
+		textureAndVertexColor.SetFloat("numberOfFaces", numberOfFaces);
+		textureAndVertexColor.SetVector("offsetPos", offsetX, offsetY);
+		glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
+		trans = glm::rotate(trans, (float)glfwGetTime(),
+			glm::vec3(0.0f, 0.0f, 1.0f));
+		//glBindTexture(GL_TEXTURE_2D, texId);
+		renderRectangle(&VAO);
+		//renderTriangle(&VAO);
 
 		//mesh->RenderMesh(configs->renderWireframe);
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 	}
-	newThread.join();
 	glfwTerminate();
+	newThread.join();
 	return 0;
 }
 
@@ -183,47 +243,6 @@ void setupHelloTriangle(unsigned int* vbo, unsigned int* vao) {
 
 }
 
-bool compileShader(unsigned int shaderId) {
-	glCompileShader(shaderId);
-	int success;
-	char infoLog[512];
-	glGetShaderiv(shaderId, GL_COMPILE_STATUS, &success);
-	if (!success) {
-		glGetShaderInfoLog(shaderId, 512, NULL, infoLog);
-		cout << "Shader compilation failed!\n" << infoLog << endl;
-	}
-	else
-	{
-		cout << "Compilation success for shader: " << shaderId << endl;
-	}
-	return success;
-}
-
-bool compileLinkProgram(unsigned int programId) {
-	int success;
-	char infoLog[512];
-	glGetProgramiv(programId, GL_LINK_STATUS, &success);
-	if (!success) {
-		glGetProgramInfoLog(programId, 512, NULL, infoLog);
-		cout << "Link compilation failed!\n" << infoLog << endl;
-	}
-	else
-		cout << "Linked program with Id " << programId << " successfully!" << endl;
-	return success;
-}
-
-void setupBaseVertexShader(unsigned int* vertexShader, char* shaderContent) {
-	*vertexShader = glCreateShader(GL_VERTEX_SHADER);
-	glShaderSource(*vertexShader, 1, &shaderContent, NULL);
-	compileShader(*vertexShader);
-}
-
-void setupBaseFragShader(unsigned int* fragShader, char* shaderContent) {
-	*fragShader = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource(*fragShader, 1, &shaderContent, NULL);
-	compileShader(*fragShader);
-}
-
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
 	glViewport(0, 0, width, height);
 }
@@ -231,5 +250,22 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
 void processInput(GLFWwindow* window) {
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, true);
+}
+
+unsigned int LoadImages(string source, int type) {
+	int width, height, nrChannels;
+	stbi_set_flip_vertically_on_load(true);
+	unsigned char* data = stbi_load(source.c_str(), &width, &height, &nrChannels, 0);
+	unsigned int texture;
+	glGenTextures(1, &texture);
+	glBindTexture(GL_TEXTURE_2D, texture);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, type, GL_UNSIGNED_BYTE, data);
+	glGenerateMipmap(GL_TEXTURE_2D);
+	stbi_image_free(data);
+	return texture;
 }
 #pragma endregion
