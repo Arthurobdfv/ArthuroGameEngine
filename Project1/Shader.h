@@ -16,4 +16,12 @@ class Shader {
 		void SetFloat(const string &name, float value) const;
 		void SetVector(const string& name, float x = 0, float y = 0, float z = 0, float w = 0);
 		void SetMat4(const string& name, mat4 matData);
+		void SetModelMatrix(mat4 matData);
+		void SetViewMatrix(mat4 matData);
+		void SetProjectionMatrix(mat4 matData);
+
+	private:
+		int GetUniformLocation(const string& name);
+		void AssignMVPUniformLocations();
+		unsigned int _modelMatrixLocation = 0, _viewMatrixLocation = 0, _projectionMatrixLocation = 0;
 };

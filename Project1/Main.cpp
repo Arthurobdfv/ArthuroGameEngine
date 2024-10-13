@@ -223,9 +223,9 @@ int main() {
 			offsetY = - 0.05;
 
 		if (glfwGetKey(window, GLFW_KEY_A))
-			offsetX = -0.05;
-		else if (glfwGetKey(window, GLFW_KEY_D))
 			offsetX = 0.05;
+		else if (glfwGetKey(window, GLFW_KEY_D))
+			offsetX = -0.05;
 		
 		view = translate(view, vec3(offsetX,0.0f, offsetY));
 
