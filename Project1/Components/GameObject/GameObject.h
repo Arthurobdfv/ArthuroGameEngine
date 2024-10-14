@@ -6,7 +6,8 @@
 class GameObject {
 	public:
 		TransformComponent* Transform;
-		Renderer3D* Renderer3D = nullptr;
-		GameObject(TransformComponent* transform);
+		Renderer3D* _renderer3D;
+		GameObject(TransformComponent* transform, Renderer3D* renderer = nullptr);
 		GameObject();
+		void SetRenderer(Renderer3D* renderer);
 };

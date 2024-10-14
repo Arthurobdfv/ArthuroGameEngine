@@ -16,5 +16,5 @@ class Renderer3D {
 
 	public:
 		Renderer3D(Shader* shader, MeshRenderer* meshRenderer, TransformComponent* transform);
-		void Update();
+		void Update(mat4* viewMatrix, mat4* projectionMatrix);
 };

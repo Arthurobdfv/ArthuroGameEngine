@@ -17,7 +17,7 @@ class EBOMeshRenderer : public MeshRenderer
 		EBOMeshRenderer(float* vertData, size_t vertDataSize, unsigned int* indexData, size_t indexDataSize);
 
 	private:
-		unsigned int m_eboId = 0, m_vaoId = 0, m_vboId = 0;
+		unsigned int m_eboId = 0;
 		unsigned int* indexData = nullptr;
 		int indexDataSize = 0;
 

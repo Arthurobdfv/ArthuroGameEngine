@@ -40,3 +40,10 @@ mat4 TransformComponent::TransformationMatrix()
 	transMat = scale(transMat, _scale);
 	return transMat;
 }
+
+TransformComponent::TransformComponent(vec3 position, vec3 rotation, vec3 scale)
+{
+	_position = position;
+	_rotation = rotation;
+	_scale = scale;
+}

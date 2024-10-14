@@ -13,6 +13,7 @@ namespace Mesh {
 
 	protected:
 		float* m_vao = nullptr;
+		unsigned int m_vaoId = 0, m_vboId = 0;
 		int size = 0;
 	};
 }

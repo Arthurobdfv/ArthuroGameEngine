@@ -54,6 +54,9 @@
     <ClCompile Include="Constants\EngineConstants.cpp">
       <Filter>Arquivos de Origem</Filter>
     </ClCompile>
+    <ClCompile Include="Core\Rendering\MeshRenderer\VAOMeshRenderer\VAOMeshRenderer.cpp">
+      <Filter>Arquivos de Origem</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\Downloads\glad (1)\include\glad\glad.h">
@@ -141,6 +144,9 @@
       <Filter>Arquivos de Cabeçalho</Filter>
     </ClInclude>
     <ClInclude Include="Components\Renderer\Renderer3D.h">
+      <Filter>Arquivos de Cabeçalho</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Rendering\MeshRenderer\VAOMeshRenderer\VAOMeshRenderer.h">
       <Filter>Arquivos de Cabeçalho</Filter>
     </ClInclude>
   </ItemGroup>

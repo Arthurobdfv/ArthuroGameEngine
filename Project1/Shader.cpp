@@ -115,22 +115,22 @@ void Shader::SetMat4(const string& name, mat4 matData)
 	glUniformMatrix4fv(glGetUniformLocation(programId, name.c_str()), 1, GL_FALSE, glm::value_ptr(matData));
 }
 
-void Shader::SetModelMatrix(mat4 matData)
+void Shader::SetModelMatrix(mat4* matData)
 {
 	if (_modelMatrixLocation != 0)
-		glUniformMatrix4fv(_modelMatrixLocation, 1, GL_FALSE, glm::value_ptr(matData));
+		glUniformMatrix4fv(_modelMatrixLocation, 1, GL_FALSE, glm::value_ptr(*matData));
 }
 
-void Shader::SetViewMatrix(mat4 matData)
+void Shader::SetViewMatrix(mat4* matData)
 {
 	if (_viewMatrixLocation != 0)
-		glUniformMatrix4fv(_viewMatrixLocation, 1, GL_FALSE, glm::value_ptr(matData));
+		glUniformMatrix4fv(_viewMatrixLocation, 1, GL_FALSE, glm::value_ptr(*matData));
 }
 
-void Shader::SetProjectionMatrix(mat4 matData)
+void Shader::SetProjectionMatrix(mat4* matData)
 {
 	if (_projectionMatrixLocation != 0)
-		glUniformMatrix4fv(_projectionMatrixLocation, 1, GL_FALSE, glm::value_ptr(matData));
+		glUniformMatrix4fv(_projectionMatrixLocation, 1, GL_FALSE, glm::value_ptr(*matData));
 
 }
 
@@ -139,7 +139,7 @@ int Shader::GetUniformLocation(const string& name)
 	int uniformLocation = glGetUniformLocation(programId, name.c_str());
 	if (uniformLocation < 0)
 		cout << "Could not find Uniform named:" << name << " in shader Id:" << programId << endl;
-
+	return uniformLocation;
 }
 
 void Shader::AssignMVPUniformLocations()
