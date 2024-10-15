@@ -1,8 +1,12 @@
-﻿  Main.cpp
+﻿  glad.c
+  EBOMeshRenderer.cpp
+C:\Users\Arth\Documents\Github\ArthuroGameEngine\Project1\EBOMeshRenderer.cpp(61,15): warning C4267: '=': conversão de 'size_t' para 'int', possível perda de dados
+C:\Users\Arth\Documents\Github\ArthuroGameEngine\Project1\EBOMeshRenderer.cpp(63,24): warning C4267: '=': conversão de 'size_t' para 'int', possível perda de dados
+  Main.cpp
 C:\Users\Arth\Documents\Github\ArthuroGameEngine\Project1\Main.cpp(221,14): warning C4305: '=': truncamento de 'double' para 'float'
 C:\Users\Arth\Documents\Github\ArthuroGameEngine\Project1\Main.cpp(223,16): warning C4305: '=': truncamento de 'double' para 'float'
-C:\Users\Arth\Documents\Github\ArthuroGameEngine\Project1\Main.cpp(226,15): warning C4305: '=': truncamento de 'double' para 'float'
-C:\Users\Arth\Documents\Github\ArthuroGameEngine\Project1\Main.cpp(228,14): warning C4305: '=': truncamento de 'double' para 'float'
+C:\Users\Arth\Documents\Github\ArthuroGameEngine\Project1\Main.cpp(226,14): warning C4305: '=': truncamento de 'double' para 'float'
+C:\Users\Arth\Documents\Github\ArthuroGameEngine\Project1\Main.cpp(228,15): warning C4305: '=': truncamento de 'double' para 'float'
 C:\Users\Arth\Documents\Github\ArthuroGameEngine\Project1\Main.cpp(233,19): warning C4305: '+=': truncamento de 'double' para 'float'
 C:\Users\Arth\Documents\Github\ArthuroGameEngine\Project1\Main.cpp(235,19): warning C4305: '-=': truncamento de 'double' para 'float'
 C:\Users\Arth\Documents\Github\ArthuroGameEngine\Project1\Main.cpp(238,25): warning C4305: '+=': truncamento de 'double' para 'float'
@@ -10,4 +14,8 @@ C:\Users\Arth\Documents\Github\ArthuroGameEngine\Project1\Main.cpp(240,25): warn
 C:\Users\Arth\Documents\Github\ArthuroGameEngine\Project1\Main.cpp(248,20): warning C4305: '=': truncamento de 'double' para 'float'
 C:\Users\Arth\Documents\Github\ArthuroGameEngine\Project1\Main.cpp(172,15): warning C4101: 'vertexShaderId': variável local não referenciada
 C:\Users\Arth\Documents\Github\ArthuroGameEngine\Project1\Main.cpp(173,15): warning C4101: 'fragShaderId': variável local não referenciada
+  Shader.cpp
+  stb_image.cpp
+C:\Users\Arth\Documents\Github\ArthuroGameEngine\Project1\stb_image.cpp(2,10): warning C4067: tokens inesperados após diretiva de pré-processador - esperado um newline
+  Gerando Código...
   Project1.vcxproj -> C:\Users\Arth\Documents\Github\ArthuroGameEngine\Project1\x64\Debug\GameEngine.exe

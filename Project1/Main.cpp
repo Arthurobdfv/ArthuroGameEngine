@@ -10,6 +10,9 @@
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 #include "glm/gtc/type_ptr.hpp"
+#include "Components/Transform/TransformComponent.h"
+#include "Components/GameObject/GameObject.h"
+#include "./Core/Rendering/MeshRenderer/VAOMeshRenderer/VAOMeshRenderer.h"
 
 
 using namespace std;
@@ -130,6 +133,8 @@ int main() {
 	//trans = scale(trans, vec3(0.5, 0.5, 0.5));
 
 
+
+
 	mat4 model = mat4(1.0f);
 	model = rotate(model, radians(-55.0f), vec3(1.0f, 0.0f, 0.0f));
 	mat4 view = mat4(1.0f);
@@ -172,14 +177,29 @@ int main() {
 	unsigned int vertexShaderId;
 	unsigned int fragShaderId;
 
-	Shader darkRedTriangleShader = Shader("DarkRedVertexColor.vs", "InputVertexColor.fs");
-	Shader colorfulVertexTriangleShader = Shader("ColorfulVertexShaderOffsetPos.vs", "InputVertexColor.fs");
 	Shader textureAndVertexColor = Shader("./Assets/Shaders/TexturedColorfulVertexShaderOffsetPos.vs", "./Assets/Shaders/TexturedInputVertexColor.fs");
 	unsigned int VBO = 0;
 	unsigned int VAO = 0;
 
-	//setupHelloRectangleEBO(&VBO, &VAO);
-	setupHelloTriangle(&VBO, &VAO);
+	GameObject* gameObjects[10]{ nullptr };
+
+	// This is not optimal, as all 10 objects are using the same vertex array
+	// some optimization could be done, more on that in the future.
+	for (int i = 0; i < 10; i++) {
+		TransformComponent* transformComponent = new TransformComponent();
+		transformComponent->setPos(cubePositions[i]);
+		float angle = 20.0f * i;
+		transformComponent->setRot(vec3(20.0f * i, 20.0f * i * 0.3, 20.0f * i * 0.5));
+		MeshRenderer* meshRenderer = new VAOMeshRenderer(&cubeVertices[0], sizeof(cubeVertices) / sizeof(float), 36);
+		Renderer3D* renderer3DComponent = new Renderer3D(&textureAndVertexColor, meshRenderer, transformComponent);
+		gameObjects[i] = new GameObject(transformComponent, renderer3DComponent);
+		// Cube Vertex Attribs
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+		glEnableVertexAttribArray(0);
+		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3*sizeof(float)));
+		glEnableVertexAttribArray(2);
+	}
+
 	unsigned int brickWallTexId = LoadImages("./Assets/Images/brick_wall.jpg", GL_RGB);
 	unsigned int emojiTexId = LoadImages("./Assets/Images/emoji.png", GL_RGBA);
 	glActiveTexture(GL_TEXTURE0);
@@ -187,24 +207,10 @@ int main() {
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, emojiTexId);
 
-	// Cube Vertex Attribs
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(2*sizeof(float)));
-	glEnableVertexAttribArray(2);
-
-	//glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
-	//glEnableVertexAttribArray(0);
-	//glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
-	//glEnableVertexAttribArray(1);
-	//glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
-	//glEnableVertexAttribArray(2);
-
 	unsigned int transformLoc = glGetUniformLocation(textureAndVertexColor.programId, "transform");
 	unsigned int modelLoc = glGetUniformLocation(textureAndVertexColor.programId, "model");
 	unsigned int viewLoc = glGetUniformLocation(textureAndVertexColor.programId, "view");
 	unsigned int projectionLoc = glGetUniformLocation(textureAndVertexColor.programId, "projection");
-	trans = glm::translate(trans, glm::vec3(0.5f, -0.5f, 0.0f));
 
 	float offsetX = 0, offsetY = 0, mixRate = 0, numberOfFaces = 1;
 	bool threadClosed = false;
@@ -223,9 +229,9 @@ int main() {
 			offsetY = - 0.05;
 
 		if (glfwGetKey(window, GLFW_KEY_A))
-			offsetX = -0.05;
-		else if (glfwGetKey(window, GLFW_KEY_D))
 			offsetX = 0.05;
+		else if (glfwGetKey(window, GLFW_KEY_D))
+			offsetX = -0.05;
 		
 		view = translate(view, vec3(offsetX,0.0f, offsetY));
 
@@ -247,38 +253,18 @@ int main() {
 		if (numberOfFaces <= 0)
 			numberOfFaces = 0.05;
 
-
+		
 		// rendernig commands
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		textureAndVertexColor.Use();
+		//textureAndVertexColor.Use();
 		textureAndVertexColor.SetInt("ourTexture", 0);
 		textureAndVertexColor.SetInt("ourSecondTexture", 1);
 		textureAndVertexColor.SetFloat("mixRate", mixRate);
 		textureAndVertexColor.SetFloat("numberOfFaces", numberOfFaces);
 		textureAndVertexColor.SetVector("offsetPos", offsetX, offsetY);
-		glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
-		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-		glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
-		glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projeMat));
-
-
-
-		//glBindTexture(GL_TEXTURE_2D, texId);
-		//renderRectangle(&VAO);
-
-		glBindVertexArray(VAO);
-		for (unsigned int i = 0; i < 10; i++)
-		{
-			glm::mat4 model = glm::mat4(1.0f);
-			model = glm::translate(model, cubePositions[i]);
-			float angle = 20.0f * i;
-			model = glm::rotate(model, glm::radians(angle),
-				glm::vec3(1.0f, 0.3f, 0.5f));
-			renderTriangle(&VAO, 36);
-			textureAndVertexColor.SetMat4("model", model);
-			glDrawArrays(GL_TRIANGLES, 0, 36);
+		for (int i = 0; i < 10; i++) {
+			gameObjects[i]->_renderer3D->Update(&view, &projeMat, configs->renderWireframe);
 		}
-		//mesh->RenderMesh(configs->renderWireframe);
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();

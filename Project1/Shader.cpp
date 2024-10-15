@@ -4,7 +4,9 @@
 #include <iostream>
 #include "glad/glad.h"
 #include "glm/gtc/type_ptr.hpp"
+#include "Constants/EngineConstants.cpp"
 using namespace glm;
+using namespace EngineConstants;
 
 Shader::Shader(const char* vertexPath, const char* fragmentPath)
 {
@@ -79,6 +81,7 @@ Shader::Shader(const char* vertexPath, const char* fragmentPath)
 	//deleteshaders;they’relinkedintoourprogramandnolongernecessary
 	glDeleteShader(vertex);
 	glDeleteShader(fragment);
+	AssignMVPUniformLocations();
 }
 
 void Shader::Use()
@@ -111,3 +114,43 @@ void Shader::SetMat4(const string& name, mat4 matData)
 {
 	glUniformMatrix4fv(glGetUniformLocation(programId, name.c_str()), 1, GL_FALSE, glm::value_ptr(matData));
 }
+
+void Shader::SetModelMatrix(mat4* matData)
+{
+	if (_modelMatrixLocation != 0)
+		glUniformMatrix4fv(_modelMatrixLocation, 1, GL_FALSE, glm::value_ptr(*matData));
+	else
+		cout << "Model Matrix uniform matrix not found!" << endl;
+}
+
+void Shader::SetViewMatrix(mat4* matData)
+{
+	if (_viewMatrixLocation != 0)
+		glUniformMatrix4fv(_viewMatrixLocation, 1, GL_FALSE, glm::value_ptr(*matData));
+	else
+		cout << "View Matrix uniform matrix not found!" << endl;
+}
+
+void Shader::SetProjectionMatrix(mat4* matData)
+{
+	if (_projectionMatrixLocation != 0)
+		glUniformMatrix4fv(_projectionMatrixLocation, 1, GL_FALSE, glm::value_ptr(*matData));
+	else
+		cout << "Projection Matrix uniform matrix not found!" << endl;
+}
+
+int Shader::GetUniformLocation(const string& name)
+{
+	int uniformLocation = glGetUniformLocation(programId, name.c_str());
+	if (uniformLocation < 0)
+		cout << "Could not find Uniform named:" << name << " in shader Id:" << programId << endl;
+	return uniformLocation;
+}
+
+void Shader::AssignMVPUniformLocations()
+{
+	_modelMatrixLocation = GetUniformLocation(SHADER_MODEL_MATRIX_NAME);
+	_viewMatrixLocation = GetUniformLocation(SHADER_VIEW_MATRIX_NAME);
+	_projectionMatrixLocation = GetUniformLocation(SHADER_PROJECTION_MATRIX_NAME);
+}
+
