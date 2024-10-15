@@ -8,17 +8,17 @@ void Renderer3D::SetupEnvironmentUniforms()
 
 Renderer3D::Renderer3D(Shader* shader, MeshRenderer* meshRenderer, TransformComponent* transform)
 {
-	_shader = shader;
-	_baseTransform = transform;
 	_meshRenderer = meshRenderer;
 	_meshRenderer->SetupMesh();
+	_shader = shader;
+	_baseTransform = transform;
 }
 
-void Renderer3D::Update(mat4* viewMatrix, mat4* projectionMatrix)
+void Renderer3D::Update(mat4* viewMatrix, mat4* projectionMatrix, bool* wireFrameMode)
 {
-	SetupEnvironmentUniforms();
 	_shader->Use();
+	SetupEnvironmentUniforms();
 	_shader->SetViewMatrix(viewMatrix);
 	_shader->SetProjectionMatrix(projectionMatrix);
-	_meshRenderer->RenderMesh();
+	_meshRenderer->RenderMesh(wireFrameMode);
 }

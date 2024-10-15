@@ -33,10 +33,10 @@ void TransformComponent::setScale(vec3 newPos)
 mat4 TransformComponent::TransformationMatrix()
 {
 	mat4 transMat = mat4(1.0f);
+	transMat = translate(transMat, _position);
 	transMat = rotate(transMat, _rotation.x, vec3(1.0f, 0.0, 0.0));
 	transMat = rotate(transMat, _rotation.y, vec3(0.0f, 1.0, 0.0));
 	transMat = rotate(transMat, _rotation.z, vec3(0.0f, 0.0, 1.0));
-	transMat = translate(transMat, _position);
 	transMat = scale(transMat, _scale);
 	return transMat;
 }

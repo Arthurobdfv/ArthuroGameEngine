@@ -34,7 +34,7 @@ void VAOMeshRenderer::SetupMesh()
 	glGenVertexArrays(1, &m_vaoId);
 	glBindVertexArray(m_vaoId);
 	glBindBuffer(GL_ARRAY_BUFFER, m_vboId);
-	glBufferData(GL_ARRAY_BUFFER, size, m_vao, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, size * sizeof(float), m_vao, GL_STATIC_DRAW);
 }
 
 VAOMeshRenderer::VAOMeshRenderer(int numberOfVerts)

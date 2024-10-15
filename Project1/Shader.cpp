@@ -119,19 +119,24 @@ void Shader::SetModelMatrix(mat4* matData)
 {
 	if (_modelMatrixLocation != 0)
 		glUniformMatrix4fv(_modelMatrixLocation, 1, GL_FALSE, glm::value_ptr(*matData));
+	else
+		cout << "Model Matrix uniform matrix not found!" << endl;
 }
 
 void Shader::SetViewMatrix(mat4* matData)
 {
 	if (_viewMatrixLocation != 0)
 		glUniformMatrix4fv(_viewMatrixLocation, 1, GL_FALSE, glm::value_ptr(*matData));
+	else
+		cout << "View Matrix uniform matrix not found!" << endl;
 }
 
 void Shader::SetProjectionMatrix(mat4* matData)
 {
 	if (_projectionMatrixLocation != 0)
 		glUniformMatrix4fv(_projectionMatrixLocation, 1, GL_FALSE, glm::value_ptr(*matData));
-
+	else
+		cout << "Projection Matrix uniform matrix not found!" << endl;
 }
 
 int Shader::GetUniformLocation(const string& name)

@@ -1,10 +1,11 @@
-#pragma once
+
 #include "../../Shader.h"
 #include "../../MeshRenderer.h"
 #include "../Transform/TransformComponent.h"
 
 
 using namespace Mesh;
+
 class Renderer3D {
 	private:
 		Shader* _shader;
@@ -16,5 +17,5 @@ class Renderer3D {
 
 	public:
 		Renderer3D(Shader* shader, MeshRenderer* meshRenderer, TransformComponent* transform);
-		void Update(mat4* viewMatrix, mat4* projectionMatrix);
+		void Update(mat4* viewMatrix, mat4* projectionMatrix, bool* wireFrameMode = nullptr);
 };
