@@ -1,20 +1,23 @@
 ﻿  Main.cpp
-C:\Users\Arth\Documents\Github\ArthuroGameEngine\Project1\Main.cpp(225,14): warning C4305: '=': truncamento de 'double' para 'float'
-C:\Users\Arth\Documents\Github\ArthuroGameEngine\Project1\Main.cpp(227,16): warning C4305: '=': truncamento de 'double' para 'float'
-C:\Users\Arth\Documents\Github\ArthuroGameEngine\Project1\Main.cpp(230,14): warning C4305: '=': truncamento de 'double' para 'float'
-C:\Users\Arth\Documents\Github\ArthuroGameEngine\Project1\Main.cpp(232,15): warning C4305: '=': truncamento de 'double' para 'float'
-C:\Users\Arth\Documents\Github\ArthuroGameEngine\Project1\Main.cpp(237,19): warning C4305: '+=': truncamento de 'double' para 'float'
-C:\Users\Arth\Documents\Github\ArthuroGameEngine\Project1\Main.cpp(239,19): warning C4305: '-=': truncamento de 'double' para 'float'
-C:\Users\Arth\Documents\Github\ArthuroGameEngine\Project1\Main.cpp(242,25): warning C4305: '+=': truncamento de 'double' para 'float'
-C:\Users\Arth\Documents\Github\ArthuroGameEngine\Project1\Main.cpp(244,25): warning C4305: '-=': truncamento de 'double' para 'float'
-C:\Users\Arth\Documents\Github\ArthuroGameEngine\Project1\Main.cpp(252,20): warning C4305: '=': truncamento de 'double' para 'float'
-C:\Users\Arth\Documents\Github\ArthuroGameEngine\Project1\Main.cpp(177,15): warning C4101: 'vertexShaderId': variável local não referenciada
-C:\Users\Arth\Documents\Github\ArthuroGameEngine\Project1\Main.cpp(178,15): warning C4101: 'fragShaderId': variável local não referenciada
+C:\Users\Arth\Documents\Github\ArthuroGameEngine\Project1\Main.cpp(36,13): warning C4244: 'inicializando': conversão de 'int' para 'float', possível perda de dados
+C:\Users\Arth\Documents\Github\ArthuroGameEngine\Project1\Main.cpp(36,32): warning C4244: 'inicializando': conversão de 'int' para 'float', possível perda de dados
+C:\Users\Arth\Documents\Github\ArthuroGameEngine\Project1\Main.cpp(261,22): warning C4244: 'inicializando': conversão de 'double' para 'float', possível perda de dados
+C:\Users\Arth\Documents\Github\ArthuroGameEngine\Project1\Main.cpp(298,19): warning C4305: '+=': truncamento de 'double' para 'float'
+C:\Users\Arth\Documents\Github\ArthuroGameEngine\Project1\Main.cpp(300,19): warning C4305: '-=': truncamento de 'double' para 'float'
+C:\Users\Arth\Documents\Github\ArthuroGameEngine\Project1\Main.cpp(303,25): warning C4305: '+=': truncamento de 'double' para 'float'
+C:\Users\Arth\Documents\Github\ArthuroGameEngine\Project1\Main.cpp(305,25): warning C4305: '-=': truncamento de 'double' para 'float'
+C:\Users\Arth\Documents\Github\ArthuroGameEngine\Project1\Main.cpp(313,20): warning C4305: '=': truncamento de 'double' para 'float'
+C:\Users\Arth\Documents\Github\ArthuroGameEngine\Project1\Main.cpp(207,15): warning C4101: 'vertexShaderId': variável local não referenciada
+C:\Users\Arth\Documents\Github\ArthuroGameEngine\Project1\Main.cpp(208,15): warning C4101: 'fragShaderId': variável local não referenciada
+C:\Users\Arth\Documents\Github\ArthuroGameEngine\Project1\Main.cpp(417,16): warning C4244: 'inicializando': conversão de 'double' para 'float', possível perda de dados
+C:\Users\Arth\Documents\Github\ArthuroGameEngine\Project1\Main.cpp(418,16): warning C4244: 'inicializando': conversão de 'double' para 'float', possível perda de dados
+C:\Users\Arth\Documents\Github\ArthuroGameEngine\Project1\Main.cpp(419,10): warning C4244: '=': conversão de 'double' para 'float', possível perda de dados
+C:\Users\Arth\Documents\Github\ArthuroGameEngine\Project1\Main.cpp(420,10): warning C4244: '=': conversão de 'double' para 'float', possível perda de dados
 x64\Release\TransformComponent.obj : warning LNK4042: objeto especificado mais de uma vez; extras ignorados
 LINK : warning LNK4098: defaultlib 'MSVCRTD' conflita com uso de outras bibliotecas; use /NODEFAULTLIB:library
   Gerando código
-  2 of 536 functions ( 0.4%) were compiled, the rest were copied from previous compilation.
+  1 of 548 functions ( 0.2%) were compiled, the rest were copied from previous compilation.
     0 functions were new in current compilation
-    26 functions had inline decision re-evaluated but remain unchanged
+    7 functions had inline decision re-evaluated but remain unchanged
   Finalizada a geração de código
   Project1.vcxproj -> C:\Users\Arth\Documents\Github\ArthuroGameEngine\Project1\x64\Release\GameEngine.exe

@@ -141,6 +141,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\Downloads\glad (1)\src\glad.c" />
+    <ClCompile Include="Components\Camera\Camera.cpp" />
     <ClCompile Include="Components\GameObject\GameObject.cpp" />
     <ClCompile Include="Components\Renderer\Renderer3D.cpp" />
     <ClCompile Include="Components\Transform\TransformComponent.cpp" />
@@ -154,6 +155,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\Downloads\glad (1)\include\glad\glad.h" />
+    <ClInclude Include="Components\Camera\Camera.h" />
     <ClInclude Include="Components\GameObject\GameObject.h" />
     <ClInclude Include="Components\Renderer\Renderer3D.h" />
     <ClInclude Include="Core\Rendering\MeshRenderer\VAOMeshRenderer\VAOMeshRenderer.h" />
@@ -185,6 +187,8 @@
     <ClInclude Include="Shader.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Assets\Shaders\LitTexturedColorfulVertexShaderOffsetPos.vs" />
+    <None Include="Assets\Shaders\LitTexturedInputVertexColor.fs" />
     <None Include="ColorfulVertexShader.vs" />
     <None Include="ColorfulVertexShaderOffsetPos.vs" />
     <None Include="ColorfulVertexShaderUpsideDown.vs" />
