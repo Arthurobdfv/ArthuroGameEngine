@@ -267,6 +267,7 @@ int main() {
 		stringstream ss;
 		ss << "lightData[" << i << "].";
 		vec4 color = vec4(LightData[i]->Color(),LightData[i]->Intensity());
+		shaderToUse.SetVector3("cameraPos", camera->Position());
 		shaderToUse.SetVector(ss.str() + "color", color.x, color.y, color.z, color.w);
 		shaderToUse.SetVector3(ss.str() + "orientation", LightData[i]->Orientation());
 		shaderToUse.SetInt(ss.str() + "lightType", LightData[i]->Type());
@@ -391,6 +392,7 @@ int main() {
 			ss << "lightData[" << i << "].";
 			vec4 color = vec4(LightData[i]->Color(), LightData[i]->Intensity());
 			shaderToUse.SetVector(ss.str() + "color", color.x, color.y, color.z, color.w);
+			shaderToUse.SetVector3("cameraPos", camera->Position());
 			shaderToUse.SetVector3(ss.str() + "orientation", LightData[i]->Orientation());
 			shaderToUse.SetInt(ss.str() + "lightType", LightData[i]->Type());
 			shaderToUse.SetFloat(ss.str() + "intensity", LightData[i]->Intensity());
