@@ -14,7 +14,8 @@
 #include "Components/GameObject/GameObject.h"
 #include "./Core/Rendering/MeshRenderer/VAOMeshRenderer/VAOMeshRenderer.h"
 #include "Components/Camera/Camera.h"
-
+#include "Components/Light/BaseLight.h"
+#include <sstream>
 
 using namespace std;
 using namespace glm;
@@ -32,7 +33,7 @@ struct AppConfig {
 #pragma endregion
 
 
-int width = 800, height = 600;
+int width = 1600, height = 900;
 float lastX = width / 2, lastY = height / 2;
 float yawAngle = -90.0f, pitchAngle = 0.0f;
 
@@ -74,6 +75,32 @@ float texCoords[] = {
 	0.0f, 0.0f,
 	1.0f, 0.0f,
 	0.5f, 1.0f
+};
+
+float cubeEBO[] = {
+	-0.25f,-0.25f,-0.25f, // Back	Bottom	Left	0
+	-0.25f,-0.25f, 0.25f, // Front Bottom	Left	1
+	-0.25f, 0.25f,-0.25f, // Back	Top		Left	2
+	-0.25f, 0.25f, 0.25f, // Front Top		Left	3
+	 0.25f,-0.25f,-0.25f, // Back	Bottom	Right	4
+	 0.25f,-0.25f, 0.25f, // Front Bottom  Right	5
+	 0.25f, 0.25f,-0.25f, // Back	Top		Right	6
+	 0.25f, 0.25f, 0.25f, // Front Top		Right	7
+};
+
+unsigned int cubeEBOIndexes[] = {
+	0,1,2,	// Left		Face
+	2,1,3,	// Left		Face
+	4,0,6,	// Front	Face
+	6,0,2,	// Front	Face
+	4,5,1,	// Top		Face
+	4,1,0,	// Top		Face
+	4,5,6,	// Back		Face
+	6,5,7,	// Back		Face
+	5,1,7,	// Rigkt	Face
+	7,1,3,	// Right	Face
+	7,3,6,	// Bottom	Face
+	6,3,2	// Bottom	Face
 };
 
 float cubeVertices[] = {
@@ -138,13 +165,6 @@ int main() {
 	float farPlane = 200.0f;
 	float nearPlane = 0.1f;
 
-	float ambientLightIntensity = 0.2f;
-	vec4 ambientLight = vec4(10, 255, 150, ambientLightIntensity);
-
-	float directionalLightIntensity = 0.8f;
-	vec4 directionalLightColor = vec4(255, 0, 0, directionalLightIntensity);
-	vec3 directionalLightDirection = vec3(0, 0, 1);
-	
 	vec4 vec(1.0f, 0.0f, 0.0f, 1.0f);
 
 
@@ -191,7 +211,7 @@ int main() {
 		cout << "Failed to initialize GLAD" << endl;
 		return -1;
 	}
-	glViewport(0, 0, 800, 600);
+	glViewport(0, 0, width, height);
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 	glEnable(GL_DEPTH_TEST);
@@ -202,24 +222,56 @@ int main() {
 	
 	
 	glfwSetCursorPosCallback(window, mouseCallback);
-	
 	// Vertex Buffer Object id
 	unsigned int vertexShaderId;
 	unsigned int fragShaderId;
 
-	Shader textureAndVertexColor = Shader("./Assets/Shaders/TexturedColorfulVertexShaderOffsetPos.vs", "./Assets/Shaders/TexturedInputVertexColor.fs");
 	Shader litTextureAndVertexColor = Shader("./Assets/Shaders/LitTexturedColorfulVertexShaderOffsetPos.vs", "./Assets/Shaders/LitTexturedInputVertexColor.fs");
+	Shader singleColored = Shader("./Assets/Shaders/SingleColored3D/SimpleColored.vs", "./Assets/Shaders/SingleColored3D/SimpleColored.fs");
 	unsigned int VBO = 0;
 	unsigned int VAO = 0;
+	
+
+	vec3 pointLightColor = vec3(0, 0.5, 0.5);
+	float pointLightIntensity = 0.5f;
+	vec3 pointLightPosition = vec3(2, 0, 2);
+
+	// Point Light Creation;
+	float* cubeEBOAddr = &cubeEBO[0];
+	MeshRenderer* lightMeshRenderer = new EBOMeshRenderer(cubeEBOAddr, sizeof(cubeEBO) / sizeof(float), &cubeEBOIndexes[0], sizeof(cubeEBOIndexes) / sizeof(int));
+	TransformComponent* lightTransform = new TransformComponent();
+	lightTransform->setPos(pointLightPosition);
+	GameObject simpleLightObject = GameObject(lightTransform, new Renderer3D(&singleColored, lightMeshRenderer, lightTransform));
+	singleColored.Use();
+	singleColored.SetVector4("aColor", vec4(pointLightColor, pointLightIntensity));
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(0);
+
+
+	BaseLight* pointLight = new BaseLight(pointLightColor, pointLightPosition, Point, pointLightIntensity);
+	// Hardcoded for now, will change in near future.
+	const int lightDataSize = 8;
+	const unsigned int lightCount = 3;
+	BaseLight* LightData[lightCount] = {
+		new BaseLight(vec3(.2f,.2f,1.0f), vec3(0,0,0), Ambient, 0.2f),
+		new BaseLight(vec3(1.0f, .2f, .2f), vec3(0,.5,1), Directional, 0.8f),
+		pointLight
+	};
+
 
 	GameObject* gameObjects[10]{ nullptr };
-
-
 	Shader shaderToUse = litTextureAndVertexColor;
 	shaderToUse.Use();
-	shaderToUse.SetVector("mainLightColor", directionalLightColor.x, directionalLightColor.y, directionalLightColor.z, directionalLightColor.w);
-	shaderToUse.SetVector("mainLightDirection", directionalLightDirection.x, directionalLightDirection.y, directionalLightDirection.z, 1.0);
-	shaderToUse.SetVector("ambientLightData", ambientLight.x, ambientLight.y, ambientLight.z, ambientLight.w);
+	shaderToUse.SetInt("lightCount", lightCount);
+	for (int i = 0; i < lightCount; i++) {
+		stringstream ss;
+		ss << "lightData[" << i << "].";
+		vec4 color = vec4(LightData[i]->Color(),LightData[i]->Intensity());
+		shaderToUse.SetVector(ss.str() + "color", color.x, color.y, color.z, color.w);
+		shaderToUse.SetVector3(ss.str() + "orientation", LightData[i]->Orientation());
+		shaderToUse.SetInt(ss.str() + "lightType", LightData[i]->Type());
+		shaderToUse.SetFloat(ss.str() + "intensity", LightData[i]->Intensity());
+	}
 	// This is not optimal, as all 10 objects are using the same vertex array
 	// some optimization could be done, more on that in the future.
 	
@@ -248,10 +300,6 @@ int main() {
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, emojiTexId);
 
-	unsigned int transformLoc = glGetUniformLocation(textureAndVertexColor.programId, "transform");
-	unsigned int modelLoc = glGetUniformLocation(textureAndVertexColor.programId, "model");
-	unsigned int viewLoc = glGetUniformLocation(textureAndVertexColor.programId, "view");
-	unsigned int projectionLoc = glGetUniformLocation(textureAndVertexColor.programId, "projection");
 
 	float offsetX = 0, offsetY = 0, mixRate = 0, numberOfFaces = 1;
 	bool threadClosed = false;
@@ -278,6 +326,21 @@ int main() {
 			movement -= normalize(cross(cameraFront, cameraUp)) * cameraSpeed;
 		else if (glfwGetKey(window, GLFW_KEY_D))
 			movement += normalize(cross(cameraFront, cameraUp)) * cameraSpeed;
+
+		// Arrow key movement to play around with point light
+		vec3 pointLightMovement = vec3(0, 0, 0);
+		if (glfwGetKey(window, GLFW_KEY_UP))
+			pointLightMovement -= vec3(0,0,cameraSpeed * deltaTime);
+		else if (glfwGetKey(window, GLFW_KEY_DOWN))
+			pointLightMovement += vec3(0,0,cameraSpeed * deltaTime);
+
+		if (glfwGetKey(window, GLFW_KEY_RIGHT))
+			pointLightMovement += vec3(cameraSpeed * deltaTime, 0, 0);
+		else if (glfwGetKey(window, GLFW_KEY_LEFT))
+			pointLightMovement -= vec3(cameraSpeed * deltaTime, 0, 0);
+
+		simpleLightObject.Transform->setPos(simpleLightObject.Transform->Position() + pointLightMovement);
+		pointLight->SetOrientation(simpleLightObject.Transform->Position());
 
 		vec3 direction;
 		direction.x = cos(radians(yawAngle)) * cos(radians(pitchAngle));
@@ -316,15 +379,24 @@ int main() {
 
 		cameraFront = normalize(direction);
 		view = glm::lookAt(camera->Position(), camera->Position() + cameraFront, cameraUp);
+		
 		//view = translate(view, vec3(offsetX,0.0f, offsetY));
 		// rendernig commands
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		//textureAndVertexColor.Use();
-		textureAndVertexColor.SetInt("ourTexture", 0);
-		textureAndVertexColor.SetInt("ourSecondTexture", 1);
-		textureAndVertexColor.SetFloat("mixRate", mixRate);
-		textureAndVertexColor.SetFloat("numberOfFaces", numberOfFaces);
-		textureAndVertexColor.SetVector("offsetPos", offsetX, offsetY);
+
+		// Need to optimize this
+		for (int i = 0; i < lightCount; i++) {
+			stringstream ss;
+			ss << "lightData[" << i << "].";
+			vec4 color = vec4(LightData[i]->Color(), LightData[i]->Intensity());
+			shaderToUse.SetVector(ss.str() + "color", color.x, color.y, color.z, color.w);
+			shaderToUse.SetVector3(ss.str() + "orientation", LightData[i]->Orientation());
+			shaderToUse.SetInt(ss.str() + "lightType", LightData[i]->Type());
+			shaderToUse.SetFloat(ss.str() + "intensity", LightData[i]->Intensity());
+		}
+		
+		simpleLightObject._renderer3D->Update(&view, &projeMat, configs->renderWireframe);
 		for (int i = 0; i < cubesToRender; i++) {
 			gameObjects[i]->_renderer3D->Update(&view, &projeMat, configs->renderWireframe);
 		}

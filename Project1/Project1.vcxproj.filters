@@ -60,6 +60,9 @@
     <ClCompile Include="Components\Camera\Camera.cpp">
       <Filter>Arquivos de Origem</Filter>
     </ClCompile>
+    <ClCompile Include="Components\Light\BaseLight.cpp">
+      <Filter>Arquivos de Origem</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\Downloads\glad (1)\include\glad\glad.h">
@@ -155,6 +158,9 @@
     <ClInclude Include="Components\Camera\Camera.h">
       <Filter>Arquivos de Cabeçalho</Filter>
     </ClInclude>
+    <ClInclude Include="Components\Light\BaseLight.h">
+      <Filter>Arquivos de Cabeçalho</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="DarkRedVertexColor.vs">
@@ -170,6 +176,8 @@
     <None Include="ColorfulVertexShaderOffsetPos.vs" />
     <None Include="Assets\Shaders\LitTexturedColorfulVertexShaderOffsetPos.vs" />
     <None Include="Assets\Shaders\LitTexturedInputVertexColor.fs" />
+    <None Include="Assets\Shaders\SingleColored3D\SimpleColored.vs" />
+    <None Include="Assets\Shaders\SingleColored3D\SimpleColored.fs" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Assets\Images\brick_wall.jpg">

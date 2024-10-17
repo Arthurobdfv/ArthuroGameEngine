@@ -110,6 +110,19 @@ void Shader::SetVector(const string& name, float x, float y, float z, float w)
 	glUniform4f(uniLoc, x, y, z, w);
 }
 
+void Shader::SetVector3(const string& name, float x, float y, float z) {
+	unsigned int uniLoc = glGetUniformLocation(programId, name.c_str());
+	glUniform3f(uniLoc, x, y, z);
+}
+
+void Shader::SetVector4(const string& name, vec4 vector) {
+	SetVector(name, vector.x, vector.y, vector.z, vector.w);
+}
+
+void Shader::SetVector3(const string& name, vec3 vec3) {
+	SetVector3(name, vec3.x, vec3.y, vec3.z);
+}
+
 void Shader::SetMat4(const string& name, mat4 matData)
 {
 	glUniformMatrix4fv(glGetUniformLocation(programId, name.c_str()), 1, GL_FALSE, glm::value_ptr(matData));
