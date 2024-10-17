@@ -22,24 +22,24 @@ As I progress through the contents of the LearnOpenGL series, I will be pushing 
 ## The To-dos
 In this section I will keep the overall features and milestones I want to achieve as well as marking them as completed to keep track of the engine and my studies progress. <br>
 This list will be constantly changed as I plan and design the game engine.
-### **Studies** - Currently at Chapter 6.3 of LearnOpenGL series.
+### **Studies** - Currently at Chapter 14 of LearnOpenGL series. Will start materials soon.
 
 ### **Engine Features and Progress**
-- [ ] Refactor the setting up of VAO into different classes
+- [x] Refactor the setting up of VAO into different classes
     - [x] Create a EBOModelRenderer to render EBO-Descripted Models
-    - [ ] Create a VBOModelRenderer to render VBO-Descripted Models
+    - [x] Create a VBOModelRenderer to render VBO-Descripted Models
 - [ ] Rendering
-    - [ ] Refactor the Shader setting-up strategy to better create / use shader programs
+    - [x] Refactor the Shader setting-up strategy to better create / use shader programs
+        - We have a Shader Class now with a Renderer3D component.(still yet to be improved).
     - [ ] Create the concept of materials, maybe? See how this will affect the overall design of the engine
     - [ ] Improving the drawcalls, currently every object has its own drawcall which is bad. (Learn about Batching)
-
 - [ ] Create a 3D model imported for different file formats
     - [ ] OBJ File Importer
+- [ ] Engine Structure
+    - [ ] Design physics engine.
+    - [ ] Design how game objects will have their components.
+        - Already Started, we have GameObjects, TransformComponents and Renderer3D (which is currently coupled with GameObject, I want to modularize it and make it not being a direct property from Gameobject)     
 - [ ] CI/CD of the Engine
     - [ ] Using CMake to build into desktop Standalones
     - [ ] Using CMake to build into Web builds
     - [ ] Github actions setup and integration with previous build strategies
-- [ ] Engine Structure
-    - [ ] Design physics engine.
-    - [ ] Design how game objects will have their components.
-
